@@ -4,34 +4,21 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from bertopic import BERTopic
 import matplotlib.pyplot as plt
-
-# ====================
-# 1️⃣ Stopwords en español
-# ====================
+#Stop words
 nltk.download("stopwords")
 spanish_stopwords = stopwords.words("spanish")
-
-# ====================
-# 2️⃣ Cargar dataset
-# ====================
+#Cargar dataset
 df = pd.read_csv('./data/acuario.csv')
 df = df.drop(columns=['TipoViaje','OrigenAutor'], errors='ignore')
 docs = (df['Titulo'].fillna('') + " " + df['Review'].fillna('')).tolist()
-
-# ====================
-# 3️⃣ TF-IDF global para filtrar palabras muy frecuentes
-# ====================
+#TF-IDF
 tfidf_global = TfidfVectorizer(
     stop_words=spanish_stopwords,
-    max_df=0.5,  # eliminar palabras que aparecen en más del 50% de los documentos
-    min_df=2     # eliminar palabras que aparecen menos de 2 veces
+    max_df=0.3  
 )
 X_tfidf = tfidf_global.fit_transform(docs)
 filtered_vocab = tfidf_global.get_feature_names_out()
-
-# ====================
-# 4️⃣ Crear BERTopic con vocabulario filtrado
-# ====================
+# BERTopic
 vectorizer_model = TfidfVectorizer(
     stop_words=spanish_stopwords,
     vocabulary=filtered_vocab
@@ -44,16 +31,9 @@ topic_model = BERTopic(
 )
 
 topics, probs = topic_model.fit_transform(docs)
-
-# ====================
-# 5️⃣ Revisar tópicos más comunes
-# ====================
+#topicos comunes
 freq = topic_model.get_topic_info()
-print(freq[['Topic','Count','Representation']].head(10))
-
-# ====================
-# 6️⃣ Visualizaciones
-# ====================
+print(freq[['Topic','Count','Representation']].head(15))
 
 # 6a. Gráfico de barras con top palabras por tópico
 fig1 = topic_model.visualize_barchart(top_n_topics=10, n_words=10)
