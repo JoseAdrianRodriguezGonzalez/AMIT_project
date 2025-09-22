@@ -4,10 +4,10 @@ class LlamaModel:
     def __init__(self,model):
         self.model_name=model
         self.model=Llama(model_path=model,
-                             n_ctx=4096,          # contexto (ajusta según el modelo)
-                            n_gpu_layers=-1,     # -1 = cargar todas las capas en GPU
+                             n_ctx=4096,          
+                            n_gpu_layers=-1,  
                             n_threads=8,
-                                      verbose=False          )
+                            verbose=False)
     def request_title(self,freq,params=None):
         if params==None:
             params = {
