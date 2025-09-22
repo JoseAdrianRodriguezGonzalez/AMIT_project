@@ -30,33 +30,39 @@ def main():
             print(f"  {ent}: {count}")
         # Filtra los stepwords
         X,vocab=vec.build_vocab(docs)
-        print(f"TF-IDF con {len(vocab)} palabras únicas")
-        print("Ejemplo de vocabulario:", vocab[:20])  # mostrar las primeras 20 palabra
+      #  print(f"TF-IDF con {len(vocab)} palabras únicas")
+      #  print("Ejemplo de vocabulario:", vocab[:20])  # mostrar las primeras 20 palabra
         #Vector definitivo
         vector=vec.get_topic_vectorizer()
         tp=TopicModeler(vector)
         topics,probs=tp.fit(docs)
         freq=tp.freq()
-        print(f"Topics {topics}")
-        print(f"Probabilidades {probs}")
+      #  print(f"Topics {topics}")
+      #  print(f"Probabilidades {probs}")
         title=tp.titles(freq)
-      #  for t in title:
-      #      print(t)
-      #  llama=LlamaModel("../model/qwen2.5-3b-instruct-q4_k_m.gguf")
-      #  descriptive_titles=llama.request_title(title)
-      #  for t in descriptive_titles:
-      #      print(t)
-     #   descriptive_inter=llama.request_interpretation(title)
-      #  for t in descriptive_inter:
-      #      print(t)
-        print(f"frecuencias {freq}")
-        fig1 = tp.visualize_barchart(top_n_topics=10, n_words=10)
-        fig3 = tp.visualize_hierarchy()
-        fig2 = tp.visualize_topics()
+        llama=LlamaModel("../model/chatgpt-5-q8_0.gguf")
+        descriptive_titles=llama.request_title(freq['Representation'])
+        for t in descriptive_titles:
+            print("="*50)
+            print("Titulo")
+            print(t)
+            print("="*50)
+            break
+        descriptive_inter=llama.request_interpretation(freq['Representation'])
+        for t in descriptive_inter:
+            print("="*50)
+            print(t)
+            print("="*50)
+            break
+        break
+       # print(f"frecuencias {freq}")
+       # fig1 = tp.visualize_barchart(top_n_topics=10, n_words=10)
+       # fig3 = tp.visualize_hierarchy()
+       # fig2 = tp.visualize_topics()
 
         # 4. Mostrar (plotly)
-        fig1.show()
-        fig2.show()
-        fig3.show()
+       # fig1.show()
+       # fig2.show()
+       # fig3.show()
 if __name__=="__main__":
     main()
