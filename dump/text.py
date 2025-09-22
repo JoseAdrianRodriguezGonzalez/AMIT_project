@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 nltk.download("stopwords")
 spanish_stopwords = stopwords.words("spanish")
 #Cargar dataset
-df = pd.read_csv('./data/acuario.csv')
+df = pd.read_csv('./data/chapultepec.csv')
 df = df.drop(columns=['TipoViaje','OrigenAutor'], errors='ignore')
 docs = (df['Titulo'].fillna('') + " " + df['Review'].fillna('')).tolist()
 #TF-IDF
@@ -38,11 +38,11 @@ print(freq[['Topic','Count','Representation']].head(15))
 # 6a. Gráfico de barras con top palabras por tópico
 fig1 = topic_model.visualize_barchart(top_n_topics=10, n_words=10)
 fig1.show()
+# 6c. Jerarquía de tópicos
+fig3 = topic_model.visualize_hierarchy()
+fig3.show()
 
 # 6b. Mapa de tópicos (proyección 2D)
 fig2 = topic_model.visualize_topics()
 fig2.show()
 
-# 6c. Jerarquía de tópicos
-fig3 = topic_model.visualize_hierarchy()
-fig3.show()

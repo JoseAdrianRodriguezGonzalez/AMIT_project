@@ -14,7 +14,13 @@ class TopicModeler:
         return  self.model.fit_transform(docs)
     def freq(self):
         return self.model.get_topic_info()
-    
+    def titles(self,freq):
+        array=[]
+        for topic,row in freq.iterrows():
+            title=" ".join(row["Representation"])
+            array.append(title)
+            
+        return array
     ###Visualizaciones #####
     def visualize_barchart(self, top_n_topics=10, n_words=10):
         """Gráfico de barras de palabras más representativas"""
