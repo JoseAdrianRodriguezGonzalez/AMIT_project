@@ -1,6 +1,7 @@
 from umap import UMAP
 from bertopic import BERTopic
 from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
 class TopicModeler:
     def __init__(self,topic_vectorizer,language="spanish",params=None):
         if params is None:
@@ -10,17 +11,26 @@ class TopicModeler:
 
         self.model=BERTopic(language=language,
                             vectorizer_model=topic_vectorizer,calculate_probabilities=True,**params)
+        self.docs = None
+        self.topics = None
+        self.probs = None
+        self.freq_info = None
+        self.topic_titles = None
     def fit(self,docs):
-        return  self.model.fit_transform(docs)
-    def freq(self):
-        return self.model.get_topic_info()
-    def titles(self,freq):
+        self.docs=docs
+        self.topics,self.probs=self.model.fit_transform(docs)
+        self.freq_info=self.model.get_topic_info()
+        self.topic_titles=self._extract_titles(self.freq_info)
+        return  self.topics,self.probs
+
+    def _extract_tiles(self,freq:pd.Dataframe):
         array=[]
-        for topic,row in freq.iterrows():
+        for _,row in freq.iterrows():
             title=" ".join(row["Representation"])
             array.append(title)
-            
         return array
+    def freq(self):
+        return self.topic_titles
     ###Visualizaciones #####
     def visualize_barchart(self, top_n_topics=10, n_words=10):
         """Gráfico de barras de palabras más representativas"""

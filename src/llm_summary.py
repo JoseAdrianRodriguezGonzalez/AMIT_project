@@ -8,6 +8,10 @@ class LlamaModel:
                             n_gpu_layers=-1,  
                             n_threads=8,
                             verbose=False)
+        self.freq = None
+        self.generated_titles = None
+        self.generated_interpretations = None
+
     def request_title(self,freq,params=None):
         if params==None:
             params = {
@@ -17,7 +21,7 @@ class LlamaModel:
                 "repeat_penalty": 1.2,
                 "stop": ["\n\n"]  # por ejemplo, para cortar al final de un párrafo
             }
-
+        self.freq=freq
         titles=[]
         for t in freq:
             prompt = f"""
@@ -38,6 +42,7 @@ class LlamaModel:
             out=output["choices"][0]["text"]
             print(output)
             titles.append(out)
+        self.generated_titles=titles
         return titles
     def request_interpretation(self,freq,params=None):
         if params==None:
@@ -48,7 +53,7 @@ class LlamaModel:
                 "repeat_penalty": 1.5,
                 "stop": ["\n\n"]  # por ejemplo, para cortar al final de un párrafo
             }
-
+        self.freq=freq
         titles=[]
         for t in freq:
             prompt = f"""
@@ -68,4 +73,10 @@ class LlamaModel:
             output=self.model(prompt=prompt,**params)
             out=output["choices"][0]["text"]
             titles.append(out)
+        self.generated_interpretations=titles
         return titles
+    def get_titles(self):
+        return self.generated_titles
+
+    def get_interpretations(self):
+        return self.generated_interpretations
