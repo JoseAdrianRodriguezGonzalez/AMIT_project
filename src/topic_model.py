@@ -1,6 +1,8 @@
 from umap import UMAP
 from bertopic import BERTopic
 from sklearn.feature_extraction.text import TfidfVectorizer
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 import pandas as pd
 class TopicModeler:
     def __init__(self,topic_vectorizer,language="spanish",params=None):
@@ -43,3 +45,16 @@ class TopicModeler:
     def visualize_topics(self):
         """Mapa 2D de los tópicos"""
         return self.model.visualize_topics()
+    def plot_wordcloud(self,topic_id=None):
+        if topic_id is None:
+            words=self.model.get_topics()
+            text=" ".join([w for tfid in words for w,_ in words[tfid]])
+        else:
+            words=dict(self.model.get_topic(topic_id))
+            text=" ".join([w for w in words.keys()])
+        wc=WordCloud(width=800,height=400,background_color="white").generate(text)
+        plt.figure(figsize=(10, 5))
+        plt.imshow(wc, interpolation="bilinear")
+        plt.axis("off")
+        plt.title(f"Nube de palabras del tópico {topic_id}" if topic_id else "Nube global")
+        plt.show()
