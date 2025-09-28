@@ -1,5 +1,6 @@
 import nltk
 from nltk.corpus import stopwords
+import pandas as pd
 class Preprocessor:
     """Preprocessor
     Clase que hace un preprocesamiento ligero de texto
@@ -14,7 +15,7 @@ class Preprocessor:
         """
         nltk.download("stopwords",quiet=True)
         self.stopword = stopwords.words(language)
-    def transform(self,df):
+    def transform(self,df:pd.DataFrame)->pd.DataFrame:
         """Función que se dedica a transformar las columnas de los comentarios si es necesario
 
         Args:
