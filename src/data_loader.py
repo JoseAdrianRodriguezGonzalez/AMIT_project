@@ -5,7 +5,7 @@ class data_loader:
         Como atributos tiene una lista de nombers de archivos que puedan estar contenidos dentro de una carpeta
         Posee los método de cargar archivo
     """
-    def __init__(self,files:str|iter[str]):
+    def __init__(self,files:str|list[str]):
         """_summary_
         Método constructor que almacena el nombre o los nombres de los archvios
         Args:

@@ -58,7 +58,7 @@ class TopicModeler:
         self.topic_titles=self._extract_titles(self.freq_info)
         return  self.topics,self.probs
 
-    def _extract_tiles(self,freq:pd.DataFrame)->list[str]:
+    def _extract_titles(self,freq:pd.DataFrame)->list[str]:
         """Extrae los título de los tópicos extraídos, según a las palabras que haya encontrado
         Args:
             freq (pd.DataFrame): Posee las representaciones, número de tópico y comentarios releventaes para determinar el

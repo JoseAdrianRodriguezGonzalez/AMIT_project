@@ -1,5 +1,17 @@
 from llama_cpp import Llama
 import re
+import sys, os
+from contextlib import contextmanager
+
+@contextmanager
+def suppress_stderr():
+    with open(os.devnull, 'w') as devnull:
+        old_stderr = sys.stderr
+        sys.stderr = devnull
+        try:
+            yield
+        finally:
+            sys.stderr = old_stderr
 class LlamaModel:
     """Clase que posee la iteracción con un modelo de LLM. Este modelo puede ser llama u otro tipo de modelo de GGUF
     model_name=nombre del modelo
@@ -14,11 +26,12 @@ class LlamaModel:
             model (str): Nombre del modelo
         """
         self.model_name=model
-        self.model=Llama(model_path=model,
-                             n_ctx=4096,          
-                            n_gpu_layers=-1,  
-                            n_threads=8,
-                            verbose=False)
+        with suppress_stderr():
+            self.model=Llama(model_path=model,
+                                n_ctx=4096,          
+                                n_gpu_layers=-1,  
+                                n_threads=8,
+                                verbose=False)
         self.freq = None
         self.generated_titles = None
         self.generated_interpretations = None
@@ -61,8 +74,15 @@ class LlamaModel:
             """
             output=self.model(prompt=prompt,**params)
             out=output["choices"][0]["text"]
-            print(output)
-            titles.append(out)
+            out = out.replace("\\n", " ").replace("\n", " ").strip()
+            out = out.replace("'", "").replace('"', "")
+            out = re.sub(r'#.*', '', out)         
+            out = re.sub(r'return.*', '', out)    
+            out = re.sub(r'articles\s*=.*', '', out)  
+            out = re.sub(r'\s{2,}', ' ', out).strip()
+            if len(out.split()) > 3:  
+                titles.append(out)
+        print(len(titles))
         self.generated_titles=titles
         return titles
     def request_interpretation(self,freq:list[list[str]],params:dict=None)->list[str]:
@@ -78,7 +98,7 @@ class LlamaModel:
         if params==None:
             params = {
                 "max_tokens": 400,
-                "temperature": 0.4,
+                "temperature": 0.1,
                 "top_p": 0.9,
                 "repeat_penalty": 1.5,
                 "stop": ["\n\n"]  # por ejemplo, para cortar al final de un párrafo
@@ -102,7 +122,15 @@ class LlamaModel:
             """
             output=self.model(prompt=prompt,**params)
             out=output["choices"][0]["text"]
-            titles.append(out)
+            out = out.replace("\\n", " ").replace("\n", " ").strip()
+            out = out.replace("'", "").replace('"', "")
+            out = re.sub(r'#.*', '', out)         
+            out = re.sub(r'return.*', '', out)    
+            out = re.sub(r'articles\s*=.*', '', out)  
+            out = re.sub(r'\s{2,}', ' ', out).strip()
+            if len(out.split()) > 3:  
+                titles.append(out)
+            print(len(titles))  
         self.generated_interpretations=titles
         return titles
     def get_titles(self)->list[str]:
