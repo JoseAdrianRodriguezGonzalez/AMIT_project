@@ -4,6 +4,7 @@ from vectorizer import Vectorizer
 from topic_model import TopicModeler
 from ner import NERextractor
 from llm_summary import LlamaModel
+from topicNer import TopicNERAnalyzer
 import re
 def main():
     #Loading data
@@ -36,6 +37,20 @@ def main():
         #Vector definitivo
         vector=vec.get_topic_vectorizer()
         tp=TopicModeler(vector,params={"min_topic_size":2})
+
+        analyzer=TopicNERAnalyzer(tp,ner)
+        topic_entity_summary = analyzer.fit(docs)
+
+        print("\nResumen de entidades por tópico:")
+        print(topic_entity_summary)
+        if len(topic_entity_summary) > 0:
+            analyzer.visualize_topic_entities(topic_id=topic_entity_summary.iloc[0]["topic_id"])
+
+        for topic_id in range(len(tp.freq_info)):
+            tp.plot_wordcloud(topic_id)
+
+        print(f"\nFrecuencias:\n{tp.freq_info}")
+
         topics,probs=tp.fit(docs)
         freq=tp.freq_info
         print(f"Topics {topics}")
@@ -65,5 +80,6 @@ def main():
         fig1.show()
         fig2.show()
         fig3.show()
+        break
 if __name__=="__main__":
     main()
