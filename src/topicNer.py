@@ -63,3 +63,67 @@ class TopicNERAnalyzer:
         plt.axis("off")
         plt.title(f"Entidades más frecuentes en el tópico {topic_id}")
         plt.show()
+
+
+ASPECT_PROTOTYPES = {
+    "PRICE": [
+        "precio elevado",
+        "entrada costosa",
+        "demasiado caro",
+        "no vale lo que cuesta"
+    ],
+    "CROWD": [
+        "demasiada gente",
+        "muy lleno",
+        "largas filas",
+        "aforo saturado"
+    ],
+    "ANIMALS": [
+        "animales",
+        "especies",
+        "bienestar animal",
+        "pingüinos",
+        "tiburones"
+    ],
+    "FOOD": [
+        "comida",
+        "restaurante",
+        "cafetería",
+        "alimentos"
+    ],
+    "SERVICE": [
+        "atención del personal",
+        "mal servicio",
+        "trato del staff"
+    ],
+    "FACILITY": [
+        "instalaciones",
+        "baños",
+        "infraestructura",
+        "espacios"
+    ],
+    "ACTIVITY": [
+        "actividades",
+        "interacción",
+        "alimentar animales",
+        "juegos"
+    ],
+    "LOCATION": [
+        "zona",
+        "túnel",
+        "nivel",
+        "área específica"
+    ]
+}
+
+def classify_aspect_semantic(text,embedder):
+    text_vec =embedder.encode(text,normalize_embeddings=True)
+    best_label=None
+    best_score=0.0
+    for label, prototypes in  ASPECT_PROTOTYPES.items():
+        proto_vecs= embedder.encode(prototypes,normalize_embeddings=True)
+        score= max(text_vec @ proto_vecs.T)
+        if score>best_score:
+            best_label=label
+            best_score=score
+    return best_label,best_score

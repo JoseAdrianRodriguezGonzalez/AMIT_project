@@ -29,7 +29,7 @@ class LlamaModel:
         with suppress_stderr():
             self.model=Llama(model_path=model,
                                 n_ctx=4096,          
-                                n_gpu_layers=-1,  
+                                n_gpu_layers=32,  
                                 n_threads=8,
                                 verbose=False)
         self.freq = None
@@ -50,7 +50,7 @@ class LlamaModel:
         if params==None:
             params = {
                 "max_tokens": 100,
-                "temperature": 0.5,
+                "temperature": 0.4,
                 "top_p": 0.9,
                 "repeat_penalty": 1.2,
                 "stop": ["\n\n"]  # por ejemplo, para cortar al final de un párrafo
@@ -59,17 +59,19 @@ class LlamaModel:
         titles=[]
         for t in freq:
             prompt = f"""
-            Eres un redactor creativo de turismo y viajes en español.
+            Eres un redactor creativo de turismo y viajes en español Mexicano.
             Debes escribir un único título atractivo y natural para un artículo promocional de viaje.
 
             Condiciones:
-            - Usa estas palabras clave de manera implícita:
+            - Usa estas palabras clave de manera implícita, provienen de un análisis de berTOPIC:
             {t}
             - No hagas preguntas, listas, ni devuelvas explicaciones.
             - No devuelvas diccionarios ni estructuras raras.
             - El título debe sonar como encabezado de revista de turismo.
             - Devuelve solo la frase, sin comillas ni signos de interrogación.
-
+            - No divages, ni asumas con lugares que no se proporcionan en los comentarios/tópicos que te estoy pasando.
+            - Si te dicen explícitamente un lugar, mencionalo.
+            
             Título turístico:
             """
             output=self.model(prompt=prompt,**params)
@@ -111,13 +113,13 @@ class LlamaModel:
             Debes redactar un párrafo breve (2–3 frases) para una guía de viajes.
 
             Condiciones:
-            - Utiliza las siguientes palabras clave de manera implícita, conectándolas con lógica natural:
+            - Utiliza las siguientes palabras clave de manera implícita, que provienen de un análisis de tópicos. Conectalas con lógica natural:
             {t}
             - No inventes lugares que no estén en las palabras clave.
             - No hagas preguntas, ni listas, ni devuelvas explicaciones.
             - Usa un tono inspirador y turístico.
             - Devuelve únicamente el párrafo, sin comillas ni código.
-
+            - Si hay un lugar, retente al contexto del texto, no menciones lugares que no se mencionen en el texto
             Descripción turística:
             """
             output=self.model(prompt=prompt,**params)

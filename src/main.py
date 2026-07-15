@@ -13,6 +13,13 @@ def main():
     loader=data_loader(chol)
     datasets=loader.load()
     #dataset traversal
+    Llms_modelos={
+        "gpt_5":"../model/chatgpt-5-q8_0.gguf",
+        "claude":"../model/Claude3.5-4B-Instruct.Q8_0.gguf",
+        "gemma":"../model/google_gemma-3-4b-it-Q8_0.gguf",
+        "meta":"../model/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf",
+        "qwen":"../model/qwen2.5-3b-instruct-q4_k_m.gguf",
+    }
     for name,df in datasets.items():
         #Initializing the elements
         pre=Preprocessor()
@@ -46,17 +53,22 @@ def main():
         if len(topic_entity_summary) > 0:
             analyzer.visualize_topic_entities(topic_id=topic_entity_summary.iloc[0]["topic_id"])
 
-        for topic_id in range(len(tp.freq_info)):
-            tp.plot_wordcloud(topic_id)
+        #for topic_id in range(len(tp.freq_info)):
+        #    tp.plot_wordcloud(topic_id)
 
         print(f"\nFrecuencias:\n{tp.freq_info}")
 
         topics,probs=tp.fit(docs)
         freq=tp.freq_info
         print(f"Topics {topics}")
+        #Aqui, creo que necesito hacer un preprocesamiento para poder tener mejores resultados del llm
         print(f"Probabilidades {probs}")
         title=tp._extract_titles(freq)
-        llama=LlamaModel("../model/chatgpt-5-q8_0.gguf")
+        print("Modelos disponbles: \n gpt_5 \n claude \n gemma \n meta \n qwen")
+        entrada=input("Modelo que necesitas: ")
+
+
+        llama=LlamaModel(Llms_modelos[entrada])
         descriptive_titles=llama.request_title(freq['Representation'])
         print(descriptive_titles)
 
@@ -69,8 +81,8 @@ def main():
             print(t)
             print("="*50)
             
-        for i in topics:
-            tp.plot_wordcloud(i)
+        #for i in topics:
+        #    tp.plot_wordcloud(i)
         print(f"frecuencias {freq}")
         fig1 = tp.visualize_barchart(top_n_topics=10, n_words=10)
         fig3 = tp.visualize_hierarchy()
